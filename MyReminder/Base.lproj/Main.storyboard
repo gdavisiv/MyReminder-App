@@ -30,8 +30,16 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Reminders" id="ffp-gp-n0F">
-                        <barButtonItem key="leftBarButtonItem" title="Test" id="wkG-hx-Xp6"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="0sW-CX-pvj"/>
+                        <barButtonItem key="leftBarButtonItem" title="Test" id="wkG-hx-Xp6">
+                            <connections>
+                                <action selector="didTapTest" destination="BYZ-38-t0r" id="9O8-cl-sPf"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="0sW-CX-pvj">
+                            <connections>
+                                <action selector="didTapAdd" destination="BYZ-38-t0r" id="bgp-yc-bHB"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="table" destination="c82-1B-SYL" id="v5r-ET-rl8"/>

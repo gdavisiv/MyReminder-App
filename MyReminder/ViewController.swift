@@ -5,7 +5,8 @@
 //  Created by GdavisIV on 3/26/20.
 //  Copyright © 2020 George Davis IV. All rights reserved.
 //
-
+//Imports the library for User Notifications : scheduling/authorizing permission/etc
+import UserNotifications
 import UIKit
 
 class ViewController: UIViewController {
@@ -30,6 +31,26 @@ class ViewController: UIViewController {
     
     @IBAction func didTapTest() {
         //Fire Test Notification
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, error in
+            if success {
+                //schedule test
+                self.scheduleTest()
+            }
+            else if let error = error {
+                print("error occured")
+            }
+        })
+    }
+    
+    func scheduleTest() {
+        let content = UNMutableNotificationContent()
+        content.title = "Hello World"
+        content.sound = .default
+        content.body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        
+        let targetDate = Date().addingTimeInterval(10)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
+        let request = UN
     }
 }
 
