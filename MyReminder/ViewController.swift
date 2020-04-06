@@ -26,7 +26,44 @@ class ViewController: UIViewController {
     
     //Since we have two buttons we need two actions
     @IBAction func didTapAdd() {
+        //show AddViewController file that we made
         //show add vc
+        guard let vc = storyboard?.instantiateViewController(identifier: "add") as? AddViewController else {
+            return
+        }
+        
+        vc.title = "New Reminder"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        vc.completion = { title, body, date in
+            DispatchQueue.main.async {
+                self.navigationController?.popToRootViewController(animated: true)
+                let new = MyReminder(title: title, date: date, indentifier: "id_\(title)")
+                self.models.append(new)
+                self.table.reloadData()
+                
+                //Create a content object
+                let content = UNMutableNotificationContent()
+                content.title = title
+                content.sound = .default
+                content.body = body
+                
+                //Use the date paramter
+                let targetDate = date
+                //We want swift to take into account each component year/month/day/hour/etc/etc
+                let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
+                //Now that we have a trigger and content, we need to create a REQUEST; an identifier is a string that uniquely labels the notification
+                let request = UNNotificationRequest(identifier: "some_long_id", content: content, trigger: trigger)
+                //Now we can schedule the actual notification
+                UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+                    //If something went wrong that print out an error
+                    if error != nil {
+                        print("Something went wrong?!")
+                    }
+                })
+                
+            }
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func didTapTest() {
@@ -38,7 +75,8 @@ class ViewController: UIViewController {
                 //Calls schedule test
                 self.scheduleTest()
             }
-            else if let error = error {
+            //Else if error doesn't equal nil
+            else if error != nil {
                 //Prints out error occured
                 print("error occured")
             }
@@ -61,9 +99,11 @@ class ViewController: UIViewController {
         let targetDate = Date().addingTimeInterval(10)
         //We want swift to take into account each component year/month/day/hour/etc/etc
         let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
-        //
+        //Now that we have a trigger and content, we need to create a REQUEST; an identifier is a string that uniquely labels the notification
         let request = UNNotificationRequest(identifier: "some_long_id", content: content, trigger: trigger)
+        //Now we can schedule the actual notification
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+            //If something went wrong that print out an error
             if error != nil {
                 print("Something went wrong?!")
             }
@@ -91,7 +131,12 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = models[indexPath.row].title
+        let date = models[indexPath.row].date
         
+        //create a Date Formatter so we can easily display when the notification will occur
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM, dd, YYYY"
+        cell.detailTextLabel?.text = formatter.string(from: date)
         return cell
     }
 }
