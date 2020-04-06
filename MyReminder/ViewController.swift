@@ -30,26 +30,38 @@ class ViewController: UIViewController {
     }
     
     @IBAction func didTapTest() {
-        //Fire Test Notification
+        //Fire Test Notification which will send out an alet, badge, and sound
+        //Completion handler
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { success, error in
+            //If we have succeed then lets schedule the test, else say we have an error occured
             if success {
-                //schedule test
+                //Calls schedule test
                 self.scheduleTest()
             }
             else if let error = error {
+                //Prints out error occured
                 print("error occured")
             }
         })
     }
     
+    //To create a notification it contains three main pieces
+    //Request which is sent to the user notification sender
+    //Notification has a content parameter : title/body/sound
+    //Trigger : Date/Location/
     func scheduleTest() {
+        //Create a content object
         let content = UNMutableNotificationContent()
         content.title = "Hello World"
         content.sound = .default
         content.body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
         
+        //Trigger: Going to use Date
+        //And add on 10 second to the current date so : Run in 10 secs
         let targetDate = Date().addingTimeInterval(10)
+        //We want swift to take into account each component year/month/day/hour/etc/etc
         let trigger = UNCalendarNotificationTrigger(dateMatching: Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: targetDate), repeats: false)
+        //
         let request = UNNotificationRequest(identifier: "some_long_id", content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
             if error != nil {
